@@ -46,7 +46,7 @@ async function render(path) {
   const { route, props } = matchRoute(path);
   const config = MFES[route.mfe];
 
-  highlightNav(path);
+  highlightNav(path); // ملاحظة: هذه الدالة لن تفعل شيئاً الآن لأن الروابط اختفت، يمكنك تجاهلها
 
   if (mounted.key === route.mfe) {
     Object.assign(mounted.el, props);
@@ -67,8 +67,8 @@ async function render(path) {
   if (location.pathname !== path) return;
 
   const el = document.createElement(config.tag);
-  el.setAttribute('routing', 'none');
-  el.setAttribute('hide-chrome', '');
+  el.routing = 'none';
+  el.hideChrome = false;
   Object.assign(el, props);
 
   outlet.replaceChildren(el);
@@ -114,10 +114,17 @@ addEventListener('luxe:checkout:step', (event) => {
 });
 
 addEventListener('luxe:navigate', (event) => {
-  const { to, productId } = event.detail;
-  navigate(to === 'product' && productId
-    ? `/product/${encodeURIComponent(productId)}`
-    : PATH_FOR_DESTINATION[to] ?? '/');
+  const { to, productId, path } = event.detail || {};
+
+  if (path) {
+    navigate(path);
+    return;
+  }
+  if (to === 'product' && productId) {
+    navigate(`/product/${encodeURIComponent(productId)}`);
+    return;
+  }
+  navigate(PATH_FOR_DESTINATION[to] ?? '/');
 });
 
 addEventListener('luxe:checkout:goto', (event) => {
