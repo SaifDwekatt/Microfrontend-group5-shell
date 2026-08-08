@@ -34,7 +34,7 @@ export const MFES = {
     owner: 'Vue + Vuetify',
     tag: 'luxe-account',
     // TODO: 'https://<account>.vercel.app/mfe/luxe-account.js'
-    src: env.VITE_MFE_ACCOUNT ?? null,
+    src: env.VITE_MFE_ACCOUNT ?? 'https://microfrontend-account-order.vercel.app/mfe/luxe-account.js',
   },
 };
 
