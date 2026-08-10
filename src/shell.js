@@ -6,7 +6,28 @@ import {
   ROUTES,
 } from './config.js';
 
+/*
+ * Compatibility shim for microfrontends built in Vite library mode.
+ *
+ * Vite replaces `process.env.NODE_ENV` in an app build but deliberately leaves
+ * it alone in a lib build, because a library is normally consumed by another
+ * bundler that will do the replacing. We import bundles straight into the
+ * browser instead, so Vue's ESM-bundler build throws
+ * "ReferenceError: process is not defined" on its first line.
+ *
+ * The account bundle hits this 246 times, all of them this one expression, so
+ * defining it here is a complete fix. Runs before any dynamic import() below.
+ *
+ * The cleaner fix belongs in that repo's mfe build:
+ *   define: { 'process.env.NODE_ENV': '"production"' }
+ * Once it ships there, this shim becomes a no-op and can be deleted.
+ */
+globalThis.process ??= { env: { NODE_ENV: 'production' } };
+
 const outlet = document.getElementById('outlet');
+
+// The microfrontends draw their own header, so the shell's chrome — and the
+// cart badge with it — may not be in the page at all.
 const badge = document.getElementById('cart-badge');
 
 const bundles = new Map();
@@ -25,7 +46,7 @@ async function importBundle(key) {
     throw new Error(`${label} has no bundle URL yet — set MFES.${key}.src in src/config.js`);
   }
 
-  await import(src);
+  await import(/* @vite-ignore */ src);
 
   if (!customElements.get(tag)) {
     throw new Error(`${src} loaded but never registered <${tag}>`);
@@ -101,6 +122,7 @@ function highlightNav(path) {
 }
 
 addEventListener('luxe:cart:updated', (event) => {
+  if (!badge) return;
   const count = event.detail.itemCount;
   badge.textContent = count;
   badge.hidden = count === 0;

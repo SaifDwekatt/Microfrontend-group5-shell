@@ -38,8 +38,12 @@ export const ROUTES = [
   { pattern: /^\/checkout\/payment\/?$/, mfe: 'cart', props: () => ({ route: 'payment' }) },
   { pattern: /^\/checkout\/confirmation\/?$/, mfe: 'cart', props: () => ({ route: 'confirmation' }) },
 
-  // Account
+  // Account — her element accepts profile | orders | login | wishlist | reviews.
+  // The bare /account catch-all must stay last, or it swallows the others.
   { pattern: /^\/account\/orders\/?$/, mfe: 'account', props: () => ({ route: 'orders' }) },
+  { pattern: /^\/account\/login\/?$/, mfe: 'account', props: () => ({ route: 'login' }) },
+  { pattern: /^\/account\/wishlist\/?$/, mfe: 'account', props: () => ({ route: 'wishlist' }) },
+  { pattern: /^\/account\/reviews\/?$/, mfe: 'account', props: () => ({ route: 'reviews' }) },
   { pattern: /^\/account/, mfe: 'account', props: () => ({ route: 'profile' }) },
 ];
 
